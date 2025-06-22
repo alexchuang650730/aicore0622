@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Agent 管理中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9em;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .nav-tabs {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 40px;
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 1em;
+            color: #6c757d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            color: #495057;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .main-content {
+            padding: 40px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .action-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .action-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-icon {
+            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea-field {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-editor {
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 0.9em;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .results-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tool-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tool-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .tool-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .tool-description {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .tool-capabilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .capability-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .language-btn {
+            padding: 8px 16px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                🤖 Agentic Agent 管理中心
+            </h1>
+            <div class="status">
+                <div class="status-indicator"></div>
+                <span>系統運行中</span>
+                <span id="currentTime"></span>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">📊 儀表板</button>
+            <button class="nav-tab" onclick="switchTab('agent')">🤖 Agent 管理</button>
+            <button class="nav-tab" onclick="switchTab('tools')">🔧 工具管理</button>
+            <button class="nav-tab" onclick="switchTab('code-execution')">💻 代碼執行</button>
+            <button class="nav-tab" onclick="switchTab('execution')">⚡ 執行中心</button>
+            <button class="nav-tab" onclick="switchTab('monitoring')">📈 監控中心</button>
+            <button class="nav-tab" onclick="switchTab('deployment')">🚀 部署管理</button>
+        </div>
+
+        <div class="main-content">
+            <!-- 儀表板 -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🤖</div>
+                            <div class="card-title">Agent 狀態</div>
+                        </div>
+                        <div class="metric-value" id="agentStatus">運行中</div>
+                        <div class="metric-label">增強版簡化Agent架構</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔧</div>
+                            <div class="card-title">可用工具</div>
+                        </div>
+                        <div class="metric-value" id="toolCount">-</div>
+                        <div class="metric-label">已註冊工具數量</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">⚡</div>
+                            <div class="card-title">執行任務</div>
+                        </div>
+                        <div class="metric-value" id="taskCount">0</div>
+                        <div class="metric-label">當前執行中任務</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📈</div>
+                            <div class="card-title">系統性能</div>
+                        </div>
+                        <div class="metric-value" id="performance">優秀</div>
+                        <div class="metric-label">平均響應時間 < 200ms</div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">🚀</div>
+                        <h3>快速操作</h3>
+                    </div>
+                    <div class="action-grid">
+                        <button class="action-btn" onclick="quickAnalysis()">
+                            <div class="action-icon">🔍</div>
+                            <div>
+                                <div>快速分析</div>
+                                <small>啟動AI分析任務</small>
+                            </div>
+                        </button>
+                        <button class="action-btn" onclick="refreshTools()">
+                            <div class="action-icon">🔄</div>
+                            <div>
+                                <div>刷新工具</div>
+                                <small>重新掃描可用工具</small>
+                            </div>
+                        </button>
+                        <button class="action-btn" onclick="systemCheck()">
+                            <div class="action-icon">🏥</div>
+                            <div>
+                                <div>系統檢查</div>
+                                <small>執行健康檢查</small>
+                            </div>
+                        </button>
+                        <button class="action-btn" onclick="deployToEC2()">
+                            <div class="action-icon">☁️</div>
+                            <div>
+                                <div>部署到EC2</div>
+                                <small>一鍵部署到生產環境</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 管理 -->
+            <div id="agent" class="tab-content">
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">🤖</div>
+                        <h3>Agent 配置</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Agent 名稱</label>
+                        <input type="text" class="input-field" id="agentName" value="enhanced_agent" placeholder="輸入Agent名稱">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">環境配置</label>
+                        <select class="input-field" id="agentEnvironment">
+                            <option value="development">開發環境</option>
+                            <option value="production">生產環境</option>
+                            <option value="testing">測試環境</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">AI 模型配置</label>
+                        <textarea class="input-field textarea-field" id="modelConfig" placeholder="輸入AI模型配置（JSON格式）">
+{
+  "model": "gpt-4",
+  "temperature": 0.7,
+  "max_tokens": 2000,
+  "timeout": 30
+}</textarea>
+                    </div>
+                    
+                    <button class="action-btn" onclick="updateAgentConfig()" style="width: 200px;">
+                        <div class="action-icon">💾</div>
+                        <div>更新配置</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 工具管理 -->
+            <div id="tools" class="tab-content">
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">🔧</div>
+                        <h3>工具註冊表</h3>
+                    </div>
+                    
+                    <button class="action-btn" onclick="loadTools()" style="width: 200px; margin-bottom: 20px;">
+                        <div class="action-icon">🔄</div>
+                        <div>重新載入工具</div>
+                    </button>
+                    
+                    <div id="toolsList" class="tool-list">
+                        <!-- 工具列表將在這裡動態載入 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 代碼執行 -->
+            <div id="code-execution" class="tab-content">
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">💻</div>
+                        <h3>Kilo Code 執行中心</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">編程語言</label>
+                        <div class="language-selector">
+                            <button class="language-btn active" onclick="selectLanguage('python')">Python</button>
+                            <button class="language-btn" onclick="selectLanguage('javascript')">JavaScript</button>
+                            <button class="language-btn" onclick="selectLanguage('shell')">Shell</button>
+                            <button class="language-btn" onclick="selectLanguage('sql')">SQL</button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">代碼內容</label>
+                        <textarea class="input-field code-editor" id="codeContent" 
+                                  placeholder="請輸入要執行的代碼...
+
+Python示例:
+import math
+import json
+
+# 計算數據
+data = [1, 4, 9, 16, 25]
+sqrt_data = [math.sqrt(x) for x in data]
+
+result = {
+    'original': data,
+    'sqrt': sqrt_data,
+    'sum': sum(sqrt_data)
+}
+
+print(json.dumps(result, indent=2))
+
+JavaScript示例:
+const data = [1, 2, 3, 4, 5];
+const squared = data.map(x => x * x);
+const sum = squared.reduce((a, b) => a + b, 0);
+
+console.log('原始數據:', data);
+console.log('平方數據:', squared);
+console.log('總和:', sum);
+
+Shell示例:
+#!/bin/bash
+echo '系統信息:'
+uname -a
+echo '磁碟使用:'
+df -h
+echo '記憶體使用:'
+free -h"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">執行選項</label>
+                        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                            <label>
+                                <input type="checkbox" id="allowNetwork"> 允許網絡訪問
+                            </label>
+                            <label>
+                                超時時間: <input type="number" id="codeTimeout" value="30" min="5" max="300" style="width: 80px;"> 秒
+                            </label>
+                            <label>
+                                記憶體限制: <input type="number" id="memoryLimit" value="128" min="64" max="512" style="width: 80px;"> MB
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="action-btn" onclick="executeCode()" style="width: 200px;">
+                        <div class="action-icon">▶️</div>
+                        <div>執行代碼</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 執行中心 -->
+            <div id="execution" class="tab-content">
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">⚡</div>
+                        <h3>任務執行</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">任務描述</label>
+                        <textarea class="input-field textarea-field" id="taskDescription" placeholder="請描述您希望Agent執行的任務...
+
+例如：
+- 分析系統運行狀態
+- 搜索相關技術文檔
+- 執行數據處理任務
+- 生成分析報告
+- 執行Python代碼進行數據分析
+- 調用API獲取數據並處理"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">執行模式</label>
+                        <select class="input-field" id="executionMode">
+                            <option value="intelligent">智能模式（AI自動選擇）</option>
+                            <option value="parallel">並行執行</option>
+                            <option value="sequential">順序執行</option>
+                            <option value="pipeline">管道執行</option>
+                        </select>
+                    </div>
+                    
+                    <button class="action-btn" onclick="executeTask()" style="width: 200px;">
+                        <div class="action-icon">🚀</div>
+                        <div>執行任務</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 監控中心 -->
+            <div id="monitoring" class="tab-content">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">⏱️</div>
+                            <div class="card-title">響應時間</div>
+                        </div>
+                        <div class="metric-value" id="responseTime">-</div>
+                        <div class="metric-label">平均響應時間 (ms)</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">💰</div>
+                            <div class="card-title">成本優化</div>
+                        </div>
+                        <div class="metric-value" id="costSaving">-</div>
+                        <div class="metric-label">成本節省百分比</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🎯</div>
+                            <div class="card-title">成功率</div>
+                        </div>
+                        <div class="metric-value" id="successRate">-</div>
+                        <div class="metric-label">任務執行成功率</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">🔄</div>
+                            <div class="card-title">並發處理</div>
+                        </div>
+                        <div class="metric-value" id="concurrency">-</div>
+                        <div class="metric-label">當前並發請求數</div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">📊</div>
+                        <h3>系統監控</h3>
+                    </div>
+                    
+                    <button class="action-btn" onclick="loadMetrics()" style="width: 200px;">
+                        <div class="action-icon">📈</div>
+                        <div>載入監控數據</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 部署管理 -->
+            <div id="deployment" class="tab-content">
+                <div class="action-section">
+                    <div class="action-header">
+                        <div class="card-icon">🚀</div>
+                        <h3>EC2 部署配置</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">EC2 服務器地址</label>
+                        <input type="text" class="input-field" id="ec2Host" value="18.212.97.173" placeholder="EC2 IP地址">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">部署路徑</label>
+                        <input type="text" class="input-field" id="deployPath" value="/opt/agentic_agent" placeholder="部署目標路徑">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">服務端口</label>
+                        <input type="number" class="input-field" id="servicePort" value="8080" placeholder="服務運行端口">
+                    </div>
+                    
+                    <div class="action-grid">
+                        <button class="action-btn" onclick="deployToEC2()">
+                            <div class="action-icon">☁️</div>
+                            <div>
+                                <div>部署到EC2</div>
+                                <small>一鍵部署到生產環境</small>
+                            </div>
+                        </button>
+                        <button class="action-btn" onclick="checkDeployment()">
+                            <div class="action-icon">🔍</div>
+                            <div>
+                                <div>檢查部署狀態</div>
+                                <small>驗證部署是否成功</small>
+                            </div>
+                        </button>
+                        <button class="action-btn" onclick="restartService()">
+                            <div class="action-icon">🔄</div>
+                            <div>
+                                <div>重啟服務</div>
+                                <small>重新啟動Agent服務</small>
+                            </div>
+                        </button>
+                        <button class="action-btn" onclick="viewLogs()">
+                            <div class="action-icon">📋</div>
+                            <div>
+                                <div>查看日誌</div>
+                                <small>檢查服務運行日誌</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 載入動畫 -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <h3>Agent 正在執行任務...</h3>
+                <p>使用增強版簡化架構進行智能處理</p>
+            </div>
+
+            <!-- 結果顯示 -->
+            <div id="results" class="results-section">
+                <div class="results-header">
+                    <div class="card-icon">✅</div>
+                    <h3>執行結果</h3>
+                </div>
+                <div id="resultsContent" class="results-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局變量
+        let currentTab = 'dashboard';
+        let agentStatus = 'running';
+        let selectedLanguage = 'python';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            loadDashboardData();
+        });
+
+        // 更新時間
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('zh-TW');
+        }
+
+        // 切換標籤
+        function switchTab(tabName) {
+            // 隱藏所有標籤內容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 移除所有標籤的active狀態
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 顯示選中的標籤內容
+            document.getElementById(tabName).classList.add('active');
+            
+            // 設置選中的標籤為active
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+            
+            // 根據標籤載入相應數據
+            switch(tabName) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'tools':
+                    loadTools();
+                    break;
+                case 'monitoring':
+                    loadMetrics();
+                    break;
+            }
+        }
+
+        // 選擇編程語言
+        function selectLanguage(language) {
+            selectedLanguage = language;
+            
+            // 更新按鈕狀態
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新代碼示例
+            updateCodeExample(language);
+        }
+
+        // 更新代碼示例
+        function updateCodeExample(language) {
+            const codeContent = document.getElementById('codeContent');
+            const examples = {
+                python: `import math
+import json
+
+# 計算數據
+data = [1, 4, 9, 16, 25]
+sqrt_data = [math.sqrt(x) for x in data]
+
+result = {
+    'original': data,
+    'sqrt': sqrt_data,
+    'sum': sum(sqrt_data)
+}
+
+print(json.dumps(result, indent=2))`,
+                javascript: `const data = [1, 2, 3, 4, 5];
+const squared = data.map(x => x * x);
+const sum = squared.reduce((a, b) => a + b, 0);
+
+console.log('原始數據:', data);
+console.log('平方數據:', squared);
+console.log('總和:', sum);`,
+                shell: `#!/bin/bash
+echo '系統信息:'
+uname -a
+echo '磁碟使用:'
+df -h
+echo '記憶體使用:'
+free -h`,
+                sql: `-- 示例SQL查詢
+SELECT 
+    COUNT(*) as total_records,
+    AVG(value) as average_value,
+    MAX(value) as max_value,
+    MIN(value) as min_value
+FROM sample_table
+WHERE created_at >= '2024-01-01'
+GROUP BY category
+ORDER BY average_value DESC;`
+            };
+            
+            if (examples[language]) {
+                codeContent.value = examples[language];
+            }
+        }
+
+        // 載入儀表板數據
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('toolCount').textContent = data.tool_count || 0;
+                    document.getElementById('taskCount').textContent = data.active_tasks || 0;
+                    document.getElementById('performance').textContent = data.performance || '優秀';
+                }
+            } catch (error) {
+                console.error('載入儀表板數據失敗:', error);
+            }
+        }
+
+        // 載入工具列表
+        async function loadTools() {
+            try {
+                const response = await fetch('/api/tools');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const toolsList = document.getElementById('toolsList');
+                    toolsList.innerHTML = '';
+                    
+                    data.tools.forEach(tool => {
+                        const toolElement = document.createElement('div');
+                        toolElement.className = 'tool-item';
+                        toolElement.innerHTML = `
+                            <div class="tool-name">${tool.name}</div>
+                            <div class="tool-description">${tool.description}</div>
+                            <div class="tool-capabilities">
+                                ${tool.capabilities.map(cap => `<span class="capability-tag">${cap}</span>`).join('')}
+                            </div>
+                        `;
+                        toolsList.appendChild(toolElement);
+                    });
+                }
+            } catch (error) {
+                console.error('載入工具列表失敗:', error);
+                document.getElementById('toolsList').innerHTML = '<p>載入工具列表失敗</p>';
+            }
+        }
+
+        // 載入監控數據
+        async function loadMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('responseTime').textContent = data.response_time + 'ms';
+                    document.getElementById('costSaving').textContent = data.cost_saving + '%';
+                    document.getElementById('successRate').textContent = data.success_rate + '%';
+                    document.getElementById('concurrency').textContent = data.concurrency;
+                }
+            } catch (error) {
+                console.error('載入監控數據失敗:', error);
+            }
+        }
+
+        // 執行代碼
+        async function executeCode() {
+            const language = selectedLanguage;
+            const code = document.getElementById('codeContent').value.trim();
+            const allowNetwork = document.getElementById('allowNetwork').checked;
+            const timeout = parseInt(document.getElementById('codeTimeout').value);
+            const memoryLimit = parseInt(document.getElementById('memoryLimit').value);
+            
+            if (!code) {
+                alert('請輸入要執行的代碼');
+                return;
+            }
+            
+            showLoading();
+            try {
+                const response = await fetch('/api/code/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        language: language,
+                        code: code,
+                        allow_network: allowNetwork,
+                        timeout: timeout,
+                        memory_limit: memoryLimit
+                    })
+                });
+                
+                const result = await response.json();
+                showCodeExecutionResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '代碼執行失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 顯示代碼執行結果
+        function showCodeExecutionResults(result) {
+            const resultsContent = document.getElementById('resultsContent');
+            
+            if (result.success) {
+                resultsContent.innerHTML = `
+執行狀態: ✅ 成功
+編程語言: ${result.language || selectedLanguage}
+執行時間: ${result.execution_time?.toFixed(3) || 'N/A'}秒
+記憶體使用: ${result.memory_usage || 'N/A'}MB
+
+📤 執行結果:
+${result.result || '(無返回值)'}
+
+📋 標準輸出:
+${result.stdout || '(無輸出)'}
+
+${result.stderr ? '⚠️ 錯誤輸出:\n' + result.stderr : ''}
+
+🔧 執行環境:
+- 沙盒ID: ${result.sandbox_id || 'N/A'}
+- 安全級別: ${result.security_level || '標準'}
+                `;
+            } else {
+                resultsContent.innerHTML = `
+執行狀態: ❌ 失敗
+編程語言: ${selectedLanguage}
+錯誤信息: ${result.error || '未知錯誤'}
+
+${result.stderr ? '詳細錯誤:\n' + result.stderr : ''}
+
+💡 建議:
+- 檢查代碼語法是否正確
+- 確認是否有權限限制
+- 檢查資源使用是否超限
+                `;
+            }
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 快速分析
+        async function quickAnalysis() {
+            showLoading();
+            try {
+                const response = await fetch('/api/quick-analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'system_status' })
+                });
+                
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '快速分析失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 刷新工具
+        async function refreshTools() {
+            try {
+                const response = await fetch('/api/tools/refresh', { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('工具刷新成功！');
+                    loadTools();
+                    loadDashboardData();
+                } else {
+                    alert('工具刷新失敗: ' + result.error);
+                }
+            } catch (error) {
+                alert('工具刷新失敗: ' + error.message);
+            }
+        }
+
+        // 系統檢查
+        async function systemCheck() {
+            showLoading();
+            try {
+                const response = await fetch('/api/health-check', { method: 'POST' });
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '系統檢查失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 執行任務
+        async function executeTask() {
+            const description = document.getElementById('taskDescription').value.trim();
+            const mode = document.getElementById('executionMode').value;
+            
+            if (!description) {
+                alert('請輸入任務描述');
+                return;
+            }
+            
+            showLoading();
+            try {
+                const response = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task: description,
+                        mode: mode
+                    })
+                });
+                
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '任務執行失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 更新Agent配置
+        async function updateAgentConfig() {
+            const name = document.getElementById('agentName').value;
+            const environment = document.getElementById('agentEnvironment').value;
+            const modelConfig = document.getElementById('modelConfig').value;
+            
+            try {
+                const config = JSON.parse(modelConfig);
+                
+                const response = await fetch('/api/agent/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        environment: environment,
+                        model_config: config
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Agent配置更新成功！');
+                } else {
+                    alert('配置更新失敗: ' + result.error);
+                }
+            } catch (error) {
+                alert('配置格式錯誤或更新失敗: ' + error.message);
+            }
+        }
+
+        // 部署到EC2
+        async function deployToEC2() {
+            const host = document.getElementById('ec2Host').value;
+            const path = document.getElementById('deployPath').value;
+            const port = document.getElementById('servicePort').value;
+            
+            if (!host || !path || !port) {
+                alert('請填寫完整的部署配置');
+                return;
+            }
+            
+            showLoading();
+            try {
+                const response = await fetch('/api/deploy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        host: host,
+                        path: path,
+                        port: parseInt(port)
+                    })
+                });
+                
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '部署失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 檢查部署狀態
+        async function checkDeployment() {
+            const host = document.getElementById('ec2Host').value;
+            const port = document.getElementById('servicePort').value;
+            
+            showLoading();
+            try {
+                const response = await fetch('/api/deployment/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ host: host, port: parseInt(port) })
+                });
+                
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '檢查部署狀態失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 重啟服務
+        async function restartService() {
+            showLoading();
+            try {
+                const response = await fetch('/api/service/restart', { method: 'POST' });
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '重啟服務失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 查看日誌
+        async function viewLogs() {
+            showLoading();
+            try {
+                const response = await fetch('/api/logs');
+                const result = await response.json();
+                showResults(result);
+            } catch (error) {
+                showResults({ success: false, error: '獲取日誌失敗: ' + error.message });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 顯示載入動畫
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+        }
+
+        // 隱藏載入動畫
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // 顯示結果
+        function showResults(result) {
+            const resultsContent = document.getElementById('resultsContent');
+            
+            if (result.success) {
+                resultsContent.innerHTML = `
+執行狀態: ✅ 成功
+執行時間: ${result.execution_time || 'N/A'}
+結果類型: ${result.result_type || 'N/A'}
+
+${result.result || result.message || '操作完成'}
+
+${result.details ? '\n詳細信息:\n' + JSON.stringify(result.details, null, 2) : ''}
+                `;
+            } else {
+                resultsContent.innerHTML = `
+執行狀態: ❌ 失敗
+錯誤信息: ${result.error || '未知錯誤'}
+
+${result.details ? '詳細信息:\n' + JSON.stringify(result.details, null, 2) : ''}
+                `;
+            }
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 頁面載入時檢查系統狀態
+        window.addEventListener('load', async function() {
+            try {
+                const response = await fetch('/api/health');
+                const health = await response.json();
+                
+                if (health.status === 'healthy') {
+                    console.log('✅ Agentic Agent 系統運行正常');
+                    agentStatus = 'healthy';
+                } else {
+                    console.warn('⚠️ 系統狀態異常');
+                    agentStatus = 'warning';
+                }
+            } catch (error) {
+                console.warn('⚠️ 無法連接到Agent服務');
+                agentStatus = 'error';
+            }
+        });
+    </script>
+</body>
+</html>
+
