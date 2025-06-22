@@ -1,0 +1,200 @@
+{
+    "name": "powerautomation-vscode-extension",
+    "displayName": "PowerAutomation",
+    "description": "智能介入系統，連接TRAE和Manus，提供智能對話分析和自動介入功能",
+    "version": "2.0.0",
+    "publisher": "smartinvention",
+    "engines": {
+        "vscode": "^1.74.0"
+    },
+    "categories": [
+        "Other",
+        "Machine Learning",
+        "Data Science"
+    ],
+    "keywords": [
+        "powerautomation",
+        "trae",
+        "manus", 
+        "ai",
+        "automation",
+        "智能介入",
+        "對話分析"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "powerautomation.start",
+                "title": "啟動PowerAutomation",
+                "category": "PowerAutomation"
+            },
+            {
+                "command": "powerautomation.stop", 
+                "title": "停止PowerAutomation",
+                "category": "PowerAutomation"
+            },
+            {
+                "command": "powerautomation.status",
+                "title": "查看狀態",
+                "category": "PowerAutomation"
+            },
+            {
+                "command": "powerautomation.testSend",
+                "title": "測試TRAE發送",
+                "category": "PowerAutomation"
+            },
+            {
+                "command": "powerautomation.syncTrae",
+                "title": "同步TRAE數據", 
+                "category": "PowerAutomation"
+            },
+            {
+                "command": "powerautomation.openDashboard",
+                "title": "打開儀表板",
+                "category": "PowerAutomation"
+            },
+            {
+                "command": "powerautomation.exportData",
+                "title": "導出數據",
+                "category": "PowerAutomation"
+            }
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "powerautomationView",
+                    "name": "PowerAutomation",
+                    "when": "true"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "powerautomation",
+                    "title": "PowerAutomation",
+                    "icon": "$(robot)"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "powerautomation.start",
+                    "when": "view == powerautomationView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "powerautomation.openDashboard",
+                    "when": "view == powerautomationView", 
+                    "group": "navigation"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "powerautomation.start"
+                },
+                {
+                    "command": "powerautomation.stop"
+                },
+                {
+                    "command": "powerautomation.status"
+                },
+                {
+                    "command": "powerautomation.testSend"
+                },
+                {
+                    "command": "powerautomation.syncTrae"
+                },
+                {
+                    "command": "powerautomation.openDashboard"
+                },
+                {
+                    "command": "powerautomation.exportData"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "PowerAutomation",
+            "properties": {
+                "powerautomation.ec2.host": {
+                    "type": "string",
+                    "default": "18.212.97.173",
+                    "description": "EC2服務器地址"
+                },
+                "powerautomation.ec2.port": {
+                    "type": "number", 
+                    "default": 8000,
+                    "description": "EC2服務器端口"
+                },
+                "powerautomation.trae.path": {
+                    "type": "string",
+                    "default": "/usr/local/bin/trae",
+                    "description": "TRAE命令路徑"
+                },
+                "powerautomation.ssh.host": {
+                    "type": "string",
+                    "default": "serveo.net",
+                    "description": "SSH隧道主機"
+                },
+                "powerautomation.ssh.port": {
+                    "type": "number",
+                    "default": 41269,
+                    "description": "SSH隧道端口"
+                },
+                "powerautomation.ssh.username": {
+                    "type": "string", 
+                    "default": "alexchuang",
+                    "description": "SSH用戶名"
+                },
+                "powerautomation.monitoring.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "啟用智能監控"
+                },
+                "powerautomation.monitoring.interval": {
+                    "type": "number",
+                    "default": 5000,
+                    "description": "監控間隔（毫秒）"
+                },
+                "powerautomation.intervention.threshold": {
+                    "type": "number",
+                    "default": 0.7,
+                    "description": "智能介入閾值"
+                },
+                "powerautomation.dashboard.autoOpen": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "啟動時自動打開儀表板"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.74.0",
+        "@types/node": "16.x",
+        "typescript": "^4.9.4"
+    },
+    "dependencies": {
+        "axios": "^1.6.0",
+        "ws": "^8.14.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/alexchuang650730/aicore0622"
+    },
+    "bugs": {
+        "url": "https://github.com/alexchuang650730/aicore0622/issues"
+    },
+    "homepage": "https://github.com/alexchuang650730/aicore0622#readme"
+}
+

@@ -1,0 +1,124 @@
+{
+  "name": "powerautomation",
+  "displayName": "PowerAutomation",
+  "description": "智能自動化助手 - TRAE與EC2智能介入系統",
+  "version": "1.0.0",
+  "publisher": "alexchuang",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "powerautomation.startMonitoring",
+        "title": "🚀 開始智能監控",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.stopMonitoring", 
+        "title": "⏹️ 停止監控",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.syncToEC2",
+        "title": "☁️ 同步到EC2",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.extractHistory",
+        "title": "📜 提取對話歷史",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.sendMessage",
+        "title": "💬 發送智能消息",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.intelligentIntervention",
+        "title": "🧠 智能介入模式",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.showStatus",
+        "title": "📊 顯示系統狀態",
+        "category": "PowerAutomation"
+      },
+      {
+        "command": "powerautomation.openSettings",
+        "title": "⚙️ 打開設置",
+        "category": "PowerAutomation"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "powerautomation.startMonitoring",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
+      }
+    ],
+    "configuration": {
+      "title": "PowerAutomation",
+      "properties": {
+        "powerautomation.ec2.host": {
+          "type": "string",
+          "default": "18.212.97.173",
+          "description": "EC2主機地址"
+        },
+        "powerautomation.ec2.user": {
+          "type": "string", 
+          "default": "ec2-user",
+          "description": "EC2用戶名"
+        },
+        "powerautomation.ec2.keyPath": {
+          "type": "string",
+          "default": "~/.ssh/alexchuang.pem",
+          "description": "EC2 SSH密鑰路徑"
+        },
+        "powerautomation.trae.dbPath": {
+          "type": "string",
+          "default": "~/Library/Application Support/Trae/User/workspaceStorage/f002a9b85f221075092022809f5a075f/state.vscdb",
+          "description": "TRAE數據庫路徑"
+        },
+        "powerautomation.monitoring.interval": {
+          "type": "number",
+          "default": 30,
+          "description": "監控間隔（秒）"
+        },
+        "powerautomation.automation.autoSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "啟用自動同步"
+        },
+        "powerautomation.automation.intelligentIntervention": {
+          "type": "boolean",
+          "default": true,
+          "description": "啟用智能介入"
+        },
+        "powerautomation.manus.url": {
+          "type": "string",
+          "default": "https://manus.im/app/ogbxIEerutqP7e4NgIB7oQ",
+          "description": "Manus頁面URL"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4"
+  }
+}
+

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerAutomation Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #cccccc;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            background: #1e1e1e;
+        }
+
+        /* 左侧仪表盘 */
+        .dashboard {
+            width: 300px;
+            background: #252526;
+            border-right: 1px solid #3c3c3c;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .dashboard-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-left: 8px;
+        }
+
+        .status-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: #2d2d30;
+            border-radius: 4px;
+            border-left: 3px solid #007acc;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        .status-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .status-positive {
+            color: #4ec9b0;
+        }
+
+        .status-warning {
+            color: #dcdcaa;
+        }
+
+        .status-error {
+            color: #f44747;
+        }
+
+        .quick-actions {
+            margin-bottom: 24px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #0e639c;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background: #1177bb;
+        }
+
+        .action-button.secondary {
+            background: #3c3c3c;
+        }
+
+        .action-button.secondary:hover {
+            background: #4c4c4c;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: #2d2d30;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4ec9b0;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #cccccc;
+            margin-top: 4px;
+        }
+
+        /* 中间数据展示区 */
+        .data-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+        }
+
+        .data-header {
+            padding: 16px 20px;
+            background: #252526;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .repo-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .repo-select {
+            background: #2d2d30;
+            border: 1px solid #3c3c3c;
+            color: #cccccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .data-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .conversation-list {
+            background: #252526;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .conversation-item {
+            padding: 16px;
+            border-bottom: 1px solid #3c3c3c;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .conversation-item:hover {
+            background: #2d2d30;
+        }
+
+        .conversation-item:last-child {
+            border-bottom: none;
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .conversation-id {
+            font-size: 12px;
+            font-weight: 600;
+            color: #007acc;
+        }
+
+        .conversation-time {
+            font-size: 10px;
+            color: #808080;
+        }
+
+        .conversation-preview {
+            font-size: 12px;
+            color: #cccccc;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .conversation-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .intervention-badge {
+            background: #4ec9b0;
+            color: #1e1e1e;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .no-intervention-badge {
+            background: #808080;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        /* 右侧详情区 */
+        .details-area {
+            width: 350px;
+            background: #252526;
+            border-left: 1px solid #3c3c3c;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .details-header {
+            padding: 16px 20px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .details-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .details-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #3c3c3c;
+            padding-bottom: 4px;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #2d2d30;
+            border-radius: 4px;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            color: #808080;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        .message-bubble {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .message-user {
+            background: #007acc;
+            color: #ffffff;
+            margin-left: 20px;
+        }
+
+        .message-trae {
+            background: #2d2d30;
+            color: #cccccc;
+            margin-right: 20px;
+        }
+
+        .message-intervention {
+            background: #4ec9b0;
+            color: #1e1e1e;
+            margin-right: 20px;
+            border-left: 4px solid #ffffff;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3c3c3c;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4c4c4c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #808080;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #007acc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧仪表盘 -->
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <span>🤖</span>
+                <div class="dashboard-title">PowerAutomation</div>
+            </div>
+
+            <!-- 系统状态 -->
+            <div class="status-section">
+                <div class="section-title">🔧 系统状态</div>
+                <div class="status-item">
+                    <span class="status-label">🟢 EC2服务</span>
+                    <span class="status-value status-positive" id="ec2Status">运行中</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🔗 TRAE连接</span>
+                    <span class="status-value status-positive" id="traeStatus">已连接</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">📊 当前倉庫</span>
+                    <span class="status-value" id="currentRepo">communitypowerauto</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">⚡ 智能介入</span>
+                    <span class="status-value status-positive" id="interventionStatus">启用</span>
+                </div>
+            </div>
+
+            <!-- 数据统计 -->
+            <div class="status-section">
+                <div class="section-title">📊 数据统计</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalConversations">23</span>
+                        <div class="stat-label">总对话数</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="interventionRate">15.2%</span>
+                        <div class="stat-label">介入率</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="successRate">94.7%</span>
+                        <div class="stat-label">成功率</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="todayCount">5</span>
+                        <div class="stat-label">今日对话</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速操作 -->
+            <div class="quick-actions">
+                <div class="section-title">🚀 快速操作</div>
+                <button class="action-button" onclick="testTraeSend()">📤 测试TRAE发送</button>
+                <button class="action-button secondary" onclick="syncTrae()">🔄 同步TRAE数据</button>
+                <button class="action-button secondary" onclick="refreshData()">📊 刷新数据</button>
+                <button class="action-button secondary" onclick="exportData()">💾 导出数据</button>
+            </div>
+
+            <!-- 最近活动 -->
+            <div class="status-section">
+                <div class="section-title">📋 最近活动</div>
+                <div class="status-item">
+                    <span class="status-label">🎮 贪吃蛇游戏</span>
+                    <span class="status-value status-positive">无需介入</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">💻 Python学习</span>
+                    <span class="status-value status-warning">已介入</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🔧 系统配置</span>
+                    <span class="status-value status-positive">已完成</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间数据展示区 -->
+        <div class="data-area">
+            <div class="data-header">
+                <div class="data-title">📈 对话数据分析</div>
+                <div class="repo-selector">
+                    <label for="repoSelect" style="font-size: 12px; color: #cccccc;">倉庫:</label>
+                    <select class="repo-select" id="repoSelect" onchange="changeRepository()">
+                        <option value="communitypowerauto">communitypowerauto</option>
+                        <option value="final_integration_fixed">final_integration_fixed</option>
+                        <option value="automation">automation</option>
+                        <option value="subtitles">subtitles</option>
+                        <option value="powerauto.ai_0.53">powerauto.ai_0.53</option>
+                        <option value="powerauto_v0.3">powerauto_v0.3</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="data-content">
+                <div class="conversation-list" id="conversationList">
+                    <!-- 对话列表将通过JavaScript动态生成 -->
+                    <div class="loading" id="loadingIndicator">
+                        🔄 正在加载对话数据...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧详情区 -->
+        <div class="details-area">
+            <div class="details-header">
+                <div class="details-title">📋 对话详情</div>
+            </div>
+
+            <div class="details-content" id="detailsContent">
+                <div class="empty-state">
+                    <div class="empty-icon">📄</div>
+                    <div>选择一个对话查看详情</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = {
+            communitypowerauto: [
+                {
+                    id: "conv_20250622_001",
+                    timestamp: "2025-06-22 17:15:30",
+                    preview: "我想要生成一个贪吃蛇游戏",
+                    messages: [
+                        { role: "user", content: "我想要生成一个贪吃蛇游戏", timestamp: "17:15:30" },
+                        { role: "trae", content: "如果您已經將程式碼存成 index.html，直接用瀏覽器即可開始玩貪吃蛇遊戲！有任何想要新增的功能或遇到問題，歡迎隨時告訴我。", timestamp: "17:15:45" },
+                        { role: "user", content: "好的", timestamp: "17:16:00" }
+                    ],
+                    intervention: false,
+                    analysis: {
+                        confidence: 95.0,
+                        priority: "low",
+                        reason: "TRAE表現優秀，已成功處理請求"
+                    }
+                },
+                {
+                    id: "conv_20250622_002", 
+                    timestamp: "2025-06-22 16:45:20",
+                    preview: "如何學習Python編程？",
+                    messages: [
+                        { role: "user", content: "如何學習Python編程？", timestamp: "16:45:20" },
+                        { role: "trae", content: "Python是一門很好的入門語言...", timestamp: "16:45:35" },
+                        { role: "intervention", content: "🎯 智能建議：建議從基礎語法開始，推薦使用Jupyter Notebook進行練習。可以先學習變量、數據類型、控制結構等基本概念。", timestamp: "16:45:50" }
+                    ],
+                    intervention: true,
+                    analysis: {
+                        confidence: 85.0,
+                        priority: "medium",
+                        reason: "檢測到學習需求，提供結構化建議"
+                    }
+                },
+                {
+                    id: "conv_20250622_003",
+                    timestamp: "2025-06-22 15:30:15", 
+                    preview: "PowerAutomation系統配置問題",
+                    messages: [
+                        { role: "user", content: "PowerAutomation系統配置問題", timestamp: "15:30:15" },
+                        { role: "trae", content: "請描述具體的配置問題...", timestamp: "15:30:30" },
+                        { role: "intervention", content: "🔧 系統診斷：檢測到配置相關問題。建議檢查EC2連接狀態、TRAE服務狀態和VSCode擴展配置。", timestamp: "15:30:45" }
+                    ],
+                    intervention: true,
+                    analysis: {
+                        confidence: 92.0,
+                        priority: "high",
+                        reason: "系統配置問題需要專業指導"
+                    }
+                }
+            ],
+            final_integration_fixed: [
+                {
+                    id: "conv_20250622_004",
+                    timestamp: "2025-06-22 14:20:10",
+                    preview: "集成測試失敗問題",
+                    messages: [
+                        { role: "user", content: "集成測試失敗問題", timestamp: "14:20:10" },
+                        { role: "trae", content: "請提供錯誤日誌...", timestamp: "14:20:25" }
+                    ],
+                    intervention: false,
+                    analysis: {
+                        confidence: 75.0,
+                        priority: "medium",
+                        reason: "等待更多信息"
+                    }
+                }
+            ]
+        };
+
+        let currentRepository = 'communitypowerauto';
+        let selectedConversation = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConversations();
+            updateStats();
+        });
+
+        // 加载对话列表
+        function loadConversations() {
+            const conversationList = document.getElementById('conversationList');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            // 显示加载状态
+            loadingIndicator.style.display = 'block';
+            
+            setTimeout(() => {
+                const conversations = mockData[currentRepository] || [];
+                
+                if (conversations.length === 0) {
+                    conversationList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <div>該倉庫暫無對話數據</div>
+                        </div>
+                    `;
+                } else {
+                    conversationList.innerHTML = conversations.map(conv => `
+                        <div class="conversation-item" onclick="selectConversation('${conv.id}')">
+                            <div class="conversation-header">
+                                <div class="conversation-id">${conv.id}</div>
+                                <div class="conversation-time">${conv.timestamp}</div>
+                            </div>
+                            <div class="conversation-preview">${conv.preview}</div>
+                            <div class="conversation-stats">
+                                <div class="stat-item">
+                                    <span>💬</span>
+                                    <span>${conv.messages.length} 消息</span>
+                                </div>
+                                <div class="stat-item">
+                                    ${conv.intervention ? 
+                                        '<span class="intervention-badge">已介入</span>' : 
+                                        '<span class="no-intervention-badge">無需介入</span>'
+                                    }
+                                </div>
+                                <div class="stat-item">
+                                    <span>🎯</span>
+                                    <span>${conv.analysis.confidence}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                loadingIndicator.style.display = 'none';
+            }, 500);
+        }
+
+        // 选择对话
+        function selectConversation(conversationId) {
+            const conversations = mockData[currentRepository] || [];
+            selectedConversation = conversations.find(conv => conv.id === conversationId);
+            
+            if (selectedConversation) {
+                showConversationDetails(selectedConversation);
+                
+                // 更新选中状态
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.style.background = '';
+                });
+                event.currentTarget.style.background = '#2d2d30';
+            }
+        }
+
+        // 显示对话详情
+        function showConversationDetails(conversation) {
+            const detailsContent = document.getElementById('detailsContent');
+            
+            detailsContent.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">📋 基本信息</div>
+                    <div class="detail-item">
+                        <div class="detail-label">對話ID</div>
+                        <div class="detail-value">${conversation.id}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">時間</div>
+                        <div class="detail-value">${conversation.timestamp}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">倉庫</div>
+                        <div class="detail-value">${currentRepository}</div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">🤖 智能分析</div>
+                    <div class="detail-item">
+                        <div class="detail-label">是否介入</div>
+                        <div class="detail-value">${conversation.intervention ? '✅ 是' : '❌ 否'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">信心度</div>
+                        <div class="detail-value">${conversation.analysis.confidence}%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">優先級</div>
+                        <div class="detail-value">${conversation.analysis.priority}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">原因</div>
+                        <div class="detail-value">${conversation.analysis.reason}</div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">💬 對話內容</div>
+                    ${conversation.messages.map(msg => `
+                        <div class="message-bubble message-${msg.role}">
+                            <div style="font-size: 10px; color: #808080; margin-bottom: 4px;">
+                                ${msg.role === 'user' ? '👤 用戶' : 
+                                  msg.role === 'trae' ? '🤖 TRAE' : '⚡ 智能介入'} - ${msg.timestamp}
+                            </div>
+                            ${msg.content}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 切换仓库
+        function changeRepository() {
+            const repoSelect = document.getElementById('repoSelect');
+            currentRepository = repoSelect.value;
+            document.getElementById('currentRepo').textContent = currentRepository;
+            
+            // 清空详情区
+            document.getElementById('detailsContent').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📄</div>
+                    <div>選擇一個對話查看詳情</div>
+                </div>
+            `;
+            
+            loadConversations();
+            updateStats();
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            const conversations = mockData[currentRepository] || [];
+            const interventions = conversations.filter(conv => conv.intervention);
+            
+            document.getElementById('totalConversations').textContent = conversations.length;
+            document.getElementById('interventionRate').textContent = 
+                conversations.length > 0 ? 
+                ((interventions.length / conversations.length) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('todayCount').textContent = conversations.length;
+        }
+
+        // 快速操作函数
+        function testTraeSend() {
+            alert('🧪 正在測試TRAE發送功能...\n\n這將發送一條測試消息到TRAE系統。');
+        }
+
+        function syncTrae() {
+            alert('🔄 正在同步TRAE數據...\n\n這將從TRAE系統同步最新的對話數據。');
+        }
+
+        function refreshData() {
+            loadConversations();
+            updateStats();
+            alert('📊 數據已刷新！');
+        }
+
+        function exportData() {
+            const data = {
+                repository: currentRepository,
+                conversations: mockData[currentRepository] || [],
+                exportTime: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `powerautomation_${currentRepository}_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 模拟实时更新
+        setInterval(() => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            
+            // 更新状态指示器
+            const indicators = document.querySelectorAll('.status-positive');
+            indicators.forEach(indicator => {
+                if (indicator.textContent.includes('运行中') || indicator.textContent.includes('已连接')) {
+                    indicator.style.opacity = indicator.style.opacity === '0.5' ? '1' : '0.5';
+                }
+            });
+        }, 2000);
+    </script>
+</body>
+</html>
+
