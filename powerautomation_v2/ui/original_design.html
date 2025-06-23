@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerAutomation VS Code Plugin UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #cccccc;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            background: #1e1e1e;
+        }
+
+        /* 左侧仪表盘 */
+        .dashboard {
+            width: 300px;
+            background: #252526;
+            border-right: 1px solid #3c3c3c;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .dashboard-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-left: 8px;
+        }
+
+        .status-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: #2d2d30;
+            border-radius: 4px;
+            border-left: 3px solid #007acc;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        .status-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .status-positive {
+            color: #4ec9b0;
+        }
+
+        .status-warning {
+            color: #dcdcaa;
+        }
+
+        .quick-actions {
+            margin-bottom: 24px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #0e639c;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background: #1177bb;
+        }
+
+        .action-button.secondary {
+            background: #3c3c3c;
+        }
+
+        .action-button.secondary:hover {
+            background: #4c4c4c;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: #2d2d30;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4ec9b0;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #cccccc;
+            margin-top: 4px;
+        }
+
+        /* 中间文件拖放区 */
+        .file-drop-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+        }
+
+        .drop-zone-header {
+            padding: 16px 20px;
+            background: #252526;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drop-zone-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .processing-status {
+            font-size: 12px;
+            color: #4ec9b0;
+            display: flex;
+            align-items: center;
+        }
+
+        .drop-zone {
+            flex: 1;
+            margin: 20px;
+            border: 2px dashed #3c3c3c;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 400px;
+        }
+
+        .drop-zone.dragover {
+            border-color: #007acc;
+            background: rgba(0, 122, 204, 0.1);
+        }
+
+        .drop-zone-content {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .drop-icon {
+            font-size: 48px;
+            color: #3c3c3c;
+            margin-bottom: 16px;
+        }
+
+        .drop-zone.dragover .drop-icon {
+            color: #007acc;
+        }
+
+        .drop-text {
+            font-size: 16px;
+            color: #cccccc;
+            margin-bottom: 8px;
+        }
+
+        .drop-subtext {
+            font-size: 12px;
+            color: #808080;
+            margin-bottom: 20px;
+        }
+
+        .upload-button {
+            padding: 10px 20px;
+            background: #007acc;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .upload-button:hover {
+            background: #1177bb;
+        }
+
+        .file-list {
+            margin: 20px;
+            background: #252526;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            margin-right: 12px;
+            color: #007acc;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .file-status {
+            font-size: 10px;
+            color: #4ec9b0;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .file-action {
+            padding: 4px 8px;
+            background: #3c3c3c;
+            border: none;
+            border-radius: 2px;
+            color: #cccccc;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .file-action:hover {
+            background: #4c4c4c;
+        }
+
+        /* 右侧对话区 */
+        .chat-area {
+            width: 350px;
+            background: #252526;
+            border-left: 1px solid #3c3c3c;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .chat-status {
+            font-size: 10px;
+            color: #4ec9b0;
+            background: rgba(78, 201, 176, 0.1);
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 16px;
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .message.user .message-content {
+            background: #007acc;
+            color: #ffffff;
+        }
+
+        .message.assistant .message-content {
+            background: #2d2d30;
+            color: #cccccc;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: #808080;
+            margin-top: 4px;
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            background: #2d2d30;
+            border-top: 1px solid #3c3c3c;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            border-radius: 4px;
+            color: #cccccc;
+            font-size: 12px;
+            resize: none;
+            min-height: 60px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+
+        .chat-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-action {
+            padding: 4px 8px;
+            background: #3c3c3c;
+            border: none;
+            border-radius: 2px;
+            color: #cccccc;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .input-action:hover {
+            background: #4c4c4c;
+        }
+
+        .send-button {
+            padding: 6px 12px;
+            background: #007acc;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .send-button:hover {
+            background: #1177bb;
+        }
+
+        .send-button:disabled {
+            background: #3c3c3c;
+            cursor: not-allowed;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3c3c3c;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4c4c4c;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .dashboard {
+                width: 250px;
+            }
+            .chat-area {
+                width: 300px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard {
+                width: 200px;
+            }
+            .chat-area {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧仪表盘 -->
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <span>🤖</span>
+                <div class="dashboard-title">PowerAutomation</div>
+            </div>
+
+            <!-- 实时状态 -->
+            <div class="status-section">
+                <div class="section-title">📊 实时状态</div>
+                <div class="status-item">
+                    <span class="status-label">💎 积分</span>
+                    <span class="status-value status-positive">2,847 (+127)</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">💰 节省</span>
+                    <span class="status-value status-positive">$8.42</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🟢 系统状态</span>
+                    <span class="status-value">运行中</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">⚡ 智慧路由</span>
+                    <span class="status-value">端侧处理</span>
+                </div>
+            </div>
+
+            <!-- OCR统计 -->
+            <div class="status-section">
+                <div class="section-title">📄 OCR统计</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">156</span>
+                        <div class="stat-label">今日处理</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">98.7%</span>
+                        <div class="stat-label">准确率</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">2.3s</span>
+                        <div class="stat-label">平均耗时</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">1,247</span>
+                        <div class="stat-label">总文档</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速操作 -->
+            <div class="quick-actions">
+                <div class="section-title">🚀 快速操作</div>
+                <button class="action-button">📄 新建OCR任务</button>
+                <button class="action-button secondary">📊 查看报告</button>
+                <button class="action-button secondary">⚙️ 设置</button>
+                <button class="action-button secondary">🔄 同步状态</button>
+            </div>
+
+            <!-- 最近活动 -->
+            <div class="status-section">
+                <div class="section-title">📋 最近活动</div>
+                <div class="status-item">
+                    <span class="status-label">📄 合同.pdf</span>
+                    <span class="status-value status-positive">完成</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">📊 报告.docx</span>
+                    <span class="status-value status-warning">处理中</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">📝 发票.jpg</span>
+                    <span class="status-value status-positive">完成</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间文件拖放区 -->
+        <div class="file-drop-area">
+            <div class="drop-zone-header">
+                <div class="drop-zone-title">📄 OCR文档处理中心</div>
+                <div class="processing-status">
+                    <span>🟢 就绪</span>
+                </div>
+            </div>
+
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-content">
+                    <div class="drop-icon">📁</div>
+                    <div class="drop-text">拖放文件到此处进行OCR识别</div>
+                    <div class="drop-subtext">支持 PDF, JPG, PNG, DOCX 等格式</div>
+                    <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                        选择文件
+                    </button>
+                    <input type="file" id="fileInput" style="display: none;" multiple 
+                           accept=".pdf,.jpg,.jpeg,.png,.docx,.doc,.txt">
+                </div>
+            </div>
+
+            <div class="file-list" id="fileList" style="display: none;">
+                <!-- 文件列表将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 右侧对话区 -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-title">💬 AI助手</div>
+                <div class="chat-status">在线</div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-content">
+                        您好！我是PowerAutomation AI助手。我可以帮您处理OCR识别、文档转换和其他自动化任务。请上传您需要处理的文档，或者告诉我您需要什么帮助。
+                    </div>
+                    <div class="message-time">刚刚</div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <textarea class="chat-input" id="chatInput" 
+                          placeholder="输入您的问题或指令..."></textarea>
+                <div class="chat-actions">
+                    <div class="input-actions">
+                        <button class="input-action">📎</button>
+                        <button class="input-action">#</button>
+                        <button class="input-action">📷</button>
+                    </div>
+                    <button class="send-button" id="sendButton">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 文件拖放功能
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+
+        let uploadedFiles = [];
+
+        // 拖放事件处理
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            files.forEach(file => {
+                const fileObj = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    size: file.size,
+                    status: 'processing',
+                    file: file
+                };
+                uploadedFiles.push(fileObj);
+                
+                // 模拟OCR处理
+                setTimeout(() => {
+                    fileObj.status = 'completed';
+                    updateFileList();
+                    addChatMessage('assistant', `文档 "${file.name}" OCR识别完成！已生成Word文档。`);
+                }, 2000 + Math.random() * 3000);
+            });
+            
+            updateFileList();
+            addChatMessage('assistant', `收到 ${files.length} 个文件，正在进行OCR识别...`);
+        }
+
+        function updateFileList() {
+            if (uploadedFiles.length === 0) {
+                fileList.style.display = 'none';
+                return;
+            }
+
+            fileList.style.display = 'block';
+            fileList.innerHTML = uploadedFiles.map(file => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <span class="file-icon">📄</span>
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-status">
+                                ${file.status === 'processing' ? '🔄 处理中...' : '✅ 已完成'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        ${file.status === 'completed' ? 
+                            '<button class="file-action">📥 下载</button>' : 
+                            '<button class="file-action">⏸️ 暂停</button>'
+                        }
+                        <button class="file-action" onclick="removeFile('${file.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeFile(fileId) {
+            uploadedFiles = uploadedFiles.filter(file => file.id !== fileId);
+            updateFileList();
+        }
+
+        // 聊天功能
+        function addChatMessage(sender, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            addChatMessage('user', message);
+            chatInput.value = '';
+
+            // 模拟AI回复
+            setTimeout(() => {
+                const responses = [
+                    '我理解您的需求，正在为您处理...',
+                    '这是一个很好的问题！让我来帮您解决。',
+                    '根据您上传的文档，我建议...',
+                    'OCR识别已完成，准确率达到98.7%。',
+                    '文档已成功转换为Word格式，您可以下载查看。'
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addChatMessage('assistant', randomResponse);
+            }, 1000);
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('PowerAutomation VS Code Plugin UI Loaded');
+        });
+    </script>
+</body>
+</html>
+

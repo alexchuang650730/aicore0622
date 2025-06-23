@@ -1,0 +1,23 @@
+{
+  "sync_time": "2025-06-22T12:36:59.919840",
+  "repositories": [
+    {
+      "name": "test",
+      "status": "synced",
+      "last_update": "2025-06-22T12:36:59.919842"
+    },
+    {
+      "name": "main",
+      "status": "synced",
+      "last_update": "2025-06-22T12:36:59.919845"
+    },
+    {
+      "name": "dev",
+      "status": "synced",
+      "last_update": "2025-06-22T12:36:59.919847"
+    }
+  ],
+  "total_repos": 3,
+  "success_count": 3,
+  "failed_count": 0
+}

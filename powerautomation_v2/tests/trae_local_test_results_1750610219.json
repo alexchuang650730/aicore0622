@@ -1,0 +1,112 @@
+[
+  {
+    "function": "trae-send-simulation",
+    "success": true,
+    "data": {
+      "repo_name": "test",
+      "message": "🧪 PowerAutomation測試消息",
+      "timestamp": "2025-06-22T12:36:59.919053",
+      "status": "sent",
+      "message_id": "msg_1750610219"
+    },
+    "log_file": "trae_send_log_test.json",
+    "timestamp": "2025-06-22T12:36:59.919369"
+  },
+  {
+    "function": "trae-sync-simulation",
+    "success": true,
+    "data": {
+      "sync_time": "2025-06-22T12:36:59.919394",
+      "repositories": [
+        {
+          "name": "test",
+          "status": "synced",
+          "last_update": "2025-06-22T12:36:59.919397"
+        },
+        {
+          "name": "main",
+          "status": "synced",
+          "last_update": "2025-06-22T12:36:59.919400"
+        },
+        {
+          "name": "dev",
+          "status": "synced",
+          "last_update": "2025-06-22T12:36:59.919402"
+        }
+      ],
+      "total_repos": 3,
+      "success_count": 3,
+      "failed_count": 0
+    },
+    "log_file": "trae_sync_log_1750610219.json",
+    "timestamp": "2025-06-22T12:36:59.919588"
+  },
+  {
+    "function": "trae-send-simulation",
+    "success": true,
+    "data": {
+      "repo_name": "main",
+      "message": "🎮 我來為您生成一個完整的貪吃蛇遊戲！包含HTML5 Canvas繪圖、JavaScript遊戲邏輯等。",
+      "timestamp": "2025-06-22T12:36:59.919690",
+      "status": "sent",
+      "message_id": "msg_1750610219"
+    },
+    "log_file": "trae_send_log_main.json",
+    "timestamp": "2025-06-22T12:36:59.919813"
+  },
+  {
+    "function": "trae-sync-simulation",
+    "success": true,
+    "data": {
+      "sync_time": "2025-06-22T12:36:59.919840",
+      "repositories": [
+        {
+          "name": "test",
+          "status": "synced",
+          "last_update": "2025-06-22T12:36:59.919842"
+        },
+        {
+          "name": "main",
+          "status": "synced",
+          "last_update": "2025-06-22T12:36:59.919845"
+        },
+        {
+          "name": "dev",
+          "status": "synced",
+          "last_update": "2025-06-22T12:36:59.919847"
+        }
+      ],
+      "total_repos": 3,
+      "success_count": 3,
+      "failed_count": 0
+    },
+    "log_file": "trae_sync_log_1750610219.json",
+    "timestamp": "2025-06-22T12:36:59.920123"
+  },
+  {
+    "function": "powerautomation-integration",
+    "success": true,
+    "conversation": {
+      "user_message": "我想要生成一個貪吃蛇遊戲",
+      "timestamp": "2025-06-22T12:36:59.919627",
+      "session_id": "test_session"
+    },
+    "analysis": {
+      "intervention_needed": true,
+      "confidence_score": 0.95,
+      "triggered_categories": [
+        "code_request",
+        "game_development"
+      ],
+      "priority": "high"
+    },
+    "smart_reply": {
+      "reply": "🎮 我來為您生成一個完整的貪吃蛇遊戲！包含HTML5 Canvas繪圖、JavaScript遊戲邏輯等。",
+      "confidence": 0.98,
+      "generation_time": "2025-06-22T12:36:59.919645"
+    },
+    "send_success": true,
+    "sync_success": true,
+    "timestamp": "2025-06-22T12:36:59.920133"
+  }
+]

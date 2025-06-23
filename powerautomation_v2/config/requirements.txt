@@ -1,0 +1,10 @@
+playwright>=1.40.0
+asyncio
+pathlib
+dataclasses
+typing
+datetime
+json
+re
+logging
+argparse
